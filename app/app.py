@@ -1,8 +1,10 @@
 import re
 
+from dataclasses import dataclass
 from flask import Flask, request
 from datetime import datetime
 from psycopg_pool import ConnectionPool
+from psycopg.rows import class_row
 
 app = Flask(__name__)
 
@@ -26,6 +28,12 @@ class PoolWrapper:
 pool_wrapper = PoolWrapper()
 
 
+@dataclass
+class Average:
+    day: datetime
+    average_price: int | None
+
+
 @app.get("/rates")
 def rates():
     date_from = get_date_from_request('date_from')
@@ -41,7 +49,7 @@ def rates():
     if not is_port(destination):
         destination = get_ports(destination)
 
-    return get_averages(date_from, date_to, origin, destination)
+    return get_averages(origin, destination, date_from, date_to)
 
 
 def get_date_from_request(param: str) -> datetime:
@@ -74,6 +82,35 @@ def get_ports(region_slug: str) -> list[str]:
             return ports
 
 
-#todo annotate return type as specific object with specific properties
-def get_averages(date_from: datetime, date_to: datetime, origin: str | list[str], destination: str | list[str]) -> list[dict]:
-    pass
+def get_averages(
+    origin: str | list[str],
+    destination: str | list[str],
+    date_from: datetime,
+    date_to: datetime,
+) -> list[Average]:
+    if origin is not list:
+        origin = [origin]
+
+    if destination is not list:
+        destination = [destination]
+
+    with pool_wrapper.pool.connection() as conn:
+        with conn.cursor(row_factory=class_row(Average)) as cur:
+            cur.execute('''
+                SELECT
+                    day,
+                    CASE
+                        WHEN COUNT(*) >= 3
+                        THEN CAST(AVG(price) AS INTEGER)
+                    ELSE
+                        NULL
+                    END average_price
+                FROM prices
+                WHERE
+                    orig_code = ANY(%s)
+                    AND dest_code = ANY(%s)
+                    AND day BETWEEN %s AND %s
+                GROUP BY day;
+            ''', (origin, destination, date_from, date_to))
+
+            return cur.fetchall()
