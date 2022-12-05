@@ -1,7 +1,7 @@
 import re
 
 from dataclasses import dataclass
-from flask import Flask, request
+from flask import Flask, request, abort
 from datetime import datetime
 from psycopg_pool import ConnectionPool
 from psycopg.rows import class_row
@@ -38,22 +38,42 @@ class Average:
 def rates():
     date_from = get_date_from_request('date_from')
     date_to = get_date_from_request('date_to')
-    origin = request.args.get('origin')
-    destination = request.args.get('destination')
 
-    # todo validation, 400 and stuff
+    if date_from > date_to:
+        abort(400, 'incorrect time period')
+
+    origin = request.args.get('origin')
+    if not origin:
+        abort(400, 'origin is required')
+
+    destination = request.args.get('destination')
+    if not destination:
+        abort(400, 'destination is required')
 
     if not is_port(origin):
         origin = get_ports(origin)
+        if len(origin) <= 0:
+            abort(404, f'region {origin} not found')
 
     if not is_port(destination):
         destination = get_ports(destination)
+        if len(destination) <= 0:
+            abort(404, f'region {destination} not found')
 
     return get_averages(origin, destination, date_from, date_to)
 
 
 def get_date_from_request(param: str) -> datetime:
-    return datetime.strptime(request.args.get(param), '%Y-%m-%d')
+    raw = request.args.get(param)
+    if not raw:
+        abort(400, f'{param} is required')
+
+    try:
+        parsed = datetime.strptime(raw, '%Y-%m-%d')
+    except ValueError:
+        abort(400, f'{param} should have format YYYY-MM-DD')
+
+    return parsed
 
 
 def is_port(slug: str) -> bool:
