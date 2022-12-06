@@ -42,19 +42,27 @@ def get_averages(
         with conn.cursor(row_factory=class_row(Average)) as cur:
             cur.execute('''
                 SELECT
-                    day,
-                    CASE
-                        WHEN COUNT(*) >= 3
-                        THEN CAST(AVG(price) AS INTEGER)
-                    ELSE
-                        NULL
-                    END average_price
-                FROM prices
-                WHERE
-                    orig_code = ANY(%s)
-                    AND dest_code = ANY(%s)
-                    AND day BETWEEN %s AND %s
-                GROUP BY day;
-            ''', (origin, destination, date_from, date_to))
+                    date_range.day::date,
+                    avg_prices.average_price
+                FROM
+                    generate_series(%(date_from)s, %(date_to)s, interval '1 day') AS date_range(day)
+                    LEFT JOIN (
+                        SELECT
+                            day,
+                            CASE
+                                WHEN COUNT(*) >= 3
+                                THEN AVG(price)::int
+                            ELSE
+                                NULL
+                            END average_price
+                        FROM prices
+                        WHERE
+                            orig_code = ANY(%(origin)s)
+                            AND dest_code = ANY(%(destination)s)
+                            AND day BETWEEN %(date_from)s AND %(date_to)s
+                            GROUP BY day
+                    ) AS avg_prices
+                    ON date_range.day = avg_prices.day;
+            ''', {'date_from': date_from, 'date_to': date_to, 'origin': origin, 'destination': destination})
 
             return cur.fetchall()

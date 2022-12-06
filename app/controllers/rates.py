@@ -1,4 +1,4 @@
-from flask import abort, request
+from flask import abort, request, jsonify
 
 from app.db.aggregation import get_ports, get_averages
 from app.helpers.request import get_date_or_400
@@ -30,6 +30,8 @@ def get():
         if len(destination) <= 0:
             abort(404, f'region {destination} not found')
 
-    return get_averages(origin, destination, date_from, date_to)
+    averages = get_averages(origin, destination, date_from, date_to)
+
+    return jsonify([average.to_dict() for average in averages])
 
 

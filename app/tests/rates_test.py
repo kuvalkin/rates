@@ -46,8 +46,19 @@ def test_not_overlapping_dates_400():
 @pytest.mark.parametrize(
     'date_from,date_to,origin,destination,expected',
     [
-        ('2016-05-05', '2016-08-12', 'CNYTN', 'SESTO', []),
-        ('2016-01-19', '2016-01-19', 'CNYTN', 'SESTO', [{'average_price': 1325, 'day': '2016-01-19'}]),
+        ('2016-05-05', '2016-05-07', 'CNYTN', 'SESTO', [
+            {'day': '2016-05-05', 'average_price': None},
+            {'day': '2016-05-06', 'average_price': None},
+            {'day': '2016-05-07', 'average_price': None},
+        ]),
+        ('2016-01-19', '2016-01-19', 'CNYTN', 'SESTO', [{'day': '2016-01-19', 'average_price': 1325}]),
+        ('2016-01-01', '2016-01-05', 'CNYTN', 'NOORK', [
+            {'day': '2016-01-01', 'average_price': 2094},
+            {'day': '2016-01-02', 'average_price': 2094},
+            {'day': '2016-01-03', 'average_price': None},
+            {'day': '2016-01-04', 'average_price': None},
+            {'day': '2016-01-05', 'average_price': 2156},
+        ]),
     ],
 )
 def test_valid_input_200(date_from: str, date_to: str, origin: str, destination: str, expected: list):
