@@ -16,12 +16,12 @@ The endpoint is available at `http://localhost:5000/rates`.
 Assuming that you have `docker compose up` running and current working directory is
 the repo.
 ```shell
-docker exec app /bin/bash -c 'pytest'
+docker compose exec app /bin/bash -c "pytest"
 ```
 
 For more verbose output run
 ```shell
-docker exec app /bin/bash -c 'pytest -vv'
+docker compose exec app /bin/bash -c "pytest -vv"
 ```
 
 ## About the code
