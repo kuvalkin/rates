@@ -61,6 +61,11 @@ def test_not_overlapping_dates_400():
             {'day': '2016-01-04', 'average_price': None},
             {'day': '2016-01-05', 'average_price': 2156},
         ]),
+        ('2016-01-20', '2016-01-22', 'china_main', 'NOORK', [
+            {'day': '2016-01-20', 'average_price': 1973},
+            {'day': '2016-01-21', 'average_price': 1974},
+            {'day': '2016-01-22', 'average_price': 1892},
+        ]),
     ],
 )
 def test_valid_input_200(date_from: str, date_to: str, origin: str, destination: str, expected: list):

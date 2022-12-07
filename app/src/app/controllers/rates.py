@@ -21,14 +21,17 @@ def get():
         abort(400, 'destination is required')
 
     if not is_port(origin):
-        origin = get_ports(origin)
-        if len(origin) <= 0:
+        origin = origin
+        origin_ports = get_ports(origin)
+        if len(origin_ports) <= 0:
             abort(404, f'region {origin} not found')
+        origin = origin_ports
 
     if not is_port(destination):
-        destination = get_ports(destination)
-        if len(destination) <= 0:
+        destination_ports = get_ports(destination)
+        if len(destination_ports) <= 0:
             abort(404, f'region {destination} not found')
+        destination = destination_ports
 
     averages = get_averages(origin, destination, date_from, date_to)
 

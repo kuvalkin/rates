@@ -6,6 +6,7 @@ from app.db import aggregation
     'region_slug,expected',
     [
         ('uk_sub', ['GBIMM', 'GBGRK', 'GBSSH', 'GBTHP', 'GBGOO', 'GBBRS', 'GBLIV', 'GBGRG', 'GBLGP', 'GBBEL', 'GBHUL', 'GBMNC', 'GBTEE', 'GBLTP', 'GBLON', 'GBTIL', 'GBPME']),
+        ('china_main', ['CNYAT', 'CNNBO', 'CNSGH', 'CNQIN', 'CNLYG', 'CNXAM', 'CNCWN', 'CNSNZ', 'CNSHK', 'HKHKG', 'CNHDG', 'CNGGZ', 'CNYTN', 'CNDAL', 'CNTXG']),
         ('does_not_exists', []),
     ],
 )
