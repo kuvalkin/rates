@@ -1,14 +1,26 @@
+import os
+
 from psycopg_pool import ConnectionPool
 
 
 class PoolWrapper:
     def __init__(self):
-        # todo move to secrets or env variables
-        self.__pool = ConnectionPool('secret', open=False)
+        config = {
+            'host': os.getenv('APP_DB_HOST'),
+            'dbname': os.getenv('APP_DB_NAME'),
+            'user': os.getenv('APP_DB_USER'),
+            'password': os.getenv('APP_DB_PASSWORD'),
+        }
+
+        conn_str = ''
+        for key, value in config.items():
+            if value is not None:
+                conn_str += '%s=%s ' % (key, value)
+
+        self.__pool = ConnectionPool(conn_str, open=False)
 
     def __del__(self):
-        if self.__pool:
-            self.__pool.close()
+        self.__pool.close()
 
     @property
     def pool(self) -> ConnectionPool:

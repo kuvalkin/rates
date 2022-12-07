@@ -1,8 +1,10 @@
+import os
+from urllib.parse import urljoin
+
 import pytest
 import requests
 
-# todo to env
-ENDPOINT = 'http://localhost:5000/rates'
+ENDPOINT = urljoin(os.getenv('APP_BASE_URL'), 'rates')
 
 
 def make_request(date_from=None, date_to=None, origin=None, destination=None) -> requests.Response:
