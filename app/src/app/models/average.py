@@ -4,7 +4,7 @@ from functools import partial
 
 from dataclasses_json import config, dataclass_json
 
-from app.helpers.config import get_date_format
+from ..helpers.config import get_date_format
 
 
 @dataclass_json

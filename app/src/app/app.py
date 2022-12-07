@@ -1,6 +1,6 @@
 from flask import Flask
 
-from controllers import rates
+from .controllers import rates
 
 app = Flask(__name__)
 

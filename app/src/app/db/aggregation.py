@@ -2,8 +2,8 @@ from datetime import datetime
 
 from psycopg.rows import class_row
 
-from app.db.service import pool_wrapper
-from app.models.average import Average
+from ..db.service import pool_wrapper
+from ..models.average import Average
 
 
 def get_ports(region_slug: str) -> list[str]:

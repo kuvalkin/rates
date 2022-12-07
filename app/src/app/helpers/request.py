@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask import request, abort
 
-from app.helpers import config
+from ..helpers import config
 
 
 def get_date_or_400(param: str) -> datetime:

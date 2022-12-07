@@ -1,8 +1,8 @@
 from flask import abort, request, jsonify
 
-from app.db.aggregation import get_ports, get_averages
-from app.helpers.request import get_date_or_400
-from app.lib.port import is_port
+from ..db.aggregation import get_ports, get_averages
+from ..helpers.request import get_date_or_400
+from ..lib.port import is_port
 
 
 def get():
